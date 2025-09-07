@@ -5,5 +5,5 @@ Vision: To create a flexible, user-friendly, and scalable Learning Management Sy
 Required Pieces:
 - Requirements Doc (./requirements.md)
 - Site Map Identifying Frontend Pages (./siteMap.md)
-- Wireframes (./)
+- Wireframes (./wireframes.pdf)
 - Basic Data Model Diagram (./basicDataModel.md)
