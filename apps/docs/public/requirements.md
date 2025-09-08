@@ -14,6 +14,14 @@ Functions:
 - Feedback/Grading
 - Notifications
 
+Unique Submission Type - Collaborative Interactive Quiz:
+- Students can submit quiz questions
+- Quiz questions are pooled together from all students
+- Creates quizlet-like tests and games for students to study from
+- Submissions would be both making questions and completing the quizes from the submission pool
+- Drawing inspiration from both quizlet and McGrawHill Smartbooks
+
+
 User Stories:
 
 Student:
