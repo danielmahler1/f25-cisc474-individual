@@ -7,7 +7,6 @@ import {
   Button,
   Title,
   Text,
-  Stack,
   Group,
   Grid,
   Card,
@@ -28,7 +27,8 @@ const classes = [
     time: 'MWF 10:00-10:50 AM',
     students: 24,
     status: 'active',
-    color: 'blue'
+    color: 'blue',
+    slug: 'cisc474'
   },
   {
     id: 2,
@@ -37,7 +37,8 @@ const classes = [
     time: 'TTh 2:00-3:15 PM',
     students: 35,
     status: 'active',
-    color: 'green'
+    color: 'green',
+    slug: 'cisc498'
   },
   {
     id: 3,
@@ -46,7 +47,8 @@ const classes = [
     time: 'MWF 1:00-1:50 PM',
     students: 18,
     status: 'active',
-    color: 'orange'
+    color: 'orange',
+    slug: 'cpeg493'
   },
   {
     id: 4,
@@ -55,7 +57,8 @@ const classes = [
     time: 'TTh 11:00-12:15 PM',
     students: 28,
     status: 'completed',
-    color: 'gray'
+    color: 'gray',
+    slug: 'cpeg494'
   }
 ];
 
@@ -134,7 +137,12 @@ export default function DashboardPage() {
                   <Text size="sm">{classItem.students} students</Text>
                 </Flex>
 
-                <Button variant="light" color={classItem.color} fullWidth>
+                <Button 
+                  variant="light" 
+                  color={classItem.color} 
+                  fullWidth
+                  onClick={() => router.push(`/course/${classItem.slug}`)}
+                >
                   📚 View Class
                 </Button>
               </Card>
