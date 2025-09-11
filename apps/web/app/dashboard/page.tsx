@@ -105,6 +105,29 @@ export default function DashboardPage() {
         </Group>
       </Paper>
 
+      {/* Quick Actions */}
+      <Container size="lg" mb="xl">
+        <Group justify="space-between" mb="md">
+          <Title order={3}>Quick Actions</Title>
+        </Group>
+        <Group gap="md">
+          <Button 
+            leftSection="📅"
+            variant="light" 
+            onClick={() => router.push('/calendar')}
+          >
+            View Calendar
+          </Button>
+          <Button 
+            leftSection="📊"
+            variant="light"
+            color="gray"
+          >
+            View Grades
+          </Button>
+        </Group>
+      </Container>
+
       {/* Classes Grid */}
       <Container size="lg">
         <Title order={3} mb="md">My Classes</Title>
