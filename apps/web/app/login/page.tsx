@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import {
   Container,
   Paper,
@@ -14,7 +15,9 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
-export default function Home() {
+export default function LoginPage() {
+  const router = useRouter();
+  
   const form = useForm({
     initialValues: {
       email: '',
@@ -28,8 +31,8 @@ export default function Home() {
 
   const handleSubmit = (values: typeof form.values) => {
     console.log('Login attempt:', values);
-    // This is just a dummy login - no actual authentication
-    alert(`Login attempt with email: ${values.email}`);
+    // Simulate successful login and redirect to dashboard
+    router.push('/dashboard');
   };
 
   return (
