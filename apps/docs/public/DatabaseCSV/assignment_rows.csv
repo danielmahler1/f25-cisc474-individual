@@ -1,0 +1,11 @@
+id,course_id,title,description,created_at,due_date,max_attempts,late_penalty
+0bf33bc9-0c2b-4856-986a-d5ec022723ca,1973bd31-7454-420f-9ba5-0bd8fccf2df0,Asymptotic Analysis Set,"Big-O, Ω, Θ proofs.",2025-09-18 15:41:56.819,2025-09-22 23:59:00,2,10
+276b7fd4-bd78-480c-a2ce-d7495ca62239,8052eb59-0a0f-4445-8037-f40dd7c2b0ee,Arrays & Strings Drills,Practice array/string ops.,2025-09-18 15:41:56.637,2025-09-24 23:59:00,2,10
+29fe6735-aac5-4746-9788-4349d4cddc95,8052eb59-0a0f-4445-8037-f40dd7c2b0ee,Recursion Mini-Set,Classic recursion problems.,2025-09-18 15:41:56.667,2025-09-30 23:59:00,3,15
+8678f777-fcce-4bcf-abc3-f4c95a348004,8052eb59-0a0f-4445-8037-f40dd7c2b0ee,Warmup: FizzBuzz Variants,Intro loops & conditionals.,2025-09-18 15:41:56.58,2025-09-20 23:59:00,3,10
+949f762a-1d86-4cef-a1b8-db5ff740003e,1973bd31-7454-420f-9ba5-0bd8fccf2df0,Graph Algorithms Coding,BFS/DFS/Dijkstra.,2025-09-18 15:41:56.881,2025-10-06 23:59:00,2,15
+9e0d2497-aeae-40a5-8f70-07cc90b0696b,8052eb59-0a0f-4445-8037-f40dd7c2b0ee,Project 1: Data Structures,Stacks/Queues/Maps.,2025-09-18 15:41:56.702,2025-10-05 23:59:00,2,15
+9fa24396-473b-4bd9-8c0c-87f71ac8e192,b0b89085-ee6d-45ec-a6f5-978d3d685e07,Routing & Subnetting Worksheet,CIDR practice.,2025-09-18 15:41:56.79,2025-10-07 23:59:00,1,0
+b41306b3-109c-44f2-b4dd-fa77f5d0ad7d,b0b89085-ee6d-45ec-a6f5-978d3d685e07,Socket Programming 101,TCP echo client/server.,2025-09-18 15:41:56.76,2025-10-01 23:59:00,2,10
+caf174f1-0628-4fb7-8f2d-f95ac091ea06,1973bd31-7454-420f-9ba5-0bd8fccf2df0,Greedy vs DP Short Answers,Explain choices.,2025-09-18 15:41:56.849,2025-09-29 23:59:00,2,10
+cead7aaf-a72c-4cc4-84c0-bc0e3383e1cd,b0b89085-ee6d-45ec-a6f5-978d3d685e07,Wireshark Lab,Capture & analyze packets.,2025-09-18 15:41:56.732,2025-09-25 23:59:00,2,5

@@ -13,8 +13,107 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
+  id         String   @id @default(uuid()) @db.Uuid @map("id")
+  name       String   @map("name")
+  email      String   @unique @map("email")
+  role       String   @map("role")          // system-level role if you want (e.g., "admin", "user")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // relations
+  courses    Course[]      // as owner/instructor (Course.user_id)
+  submissions Submission[]
+  enrollments Enrollment[]
+  calendarEvents CalendarEvent[]
+
+  @@map("users")
+}
+
+model Course {
+  id         String   @id @default(uuid()) @db.Uuid @map("id")
+  code       String   @map("code")
+  title      String   @map("title")
+  term       String   @map("term")
+  userId     String   @db.Uuid @map("user_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // relations
+  owner      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignments Assignment[]
+  enrollments Enrollment[]
+
+  @@index([userId])
+  @@map("course")
+}
+
+model Assignment {
+  id           String   @id @default(uuid()) @db.Uuid @map("id")
+  courseId     String   @db.Uuid @map("course_id")
+  title        String   @map("title")
+  description  String?  @map("description")
+  createdAt    DateTime @default(now()) @map("created_at")
+  dueDate      DateTime @map("due_date")
+  maxAttempts  Int      @default(1) @map("max_attempts")
+  latePenalty  Float?   @map("late_penalty")
+
+  // relations
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions  Submission[]
+  calendarEvents CalendarEvent[]
+
+  @@index([courseId])
+  @@index([dueDate])
+  @@map("assignment")
+}
+
+model Submission {
+  id             String   @id @default(uuid()) @db.Uuid @map("id")
+  assignmentId   String   @db.Uuid @map("assignment_id")
+  userId         String   @db.Uuid @map("user_id")
+  submissionType String   @map("submission_type") // e.g., "file", "link", "code", "notebook"
+  attemptNumber  Int      @default(1) @map("attempt_number")
+  autoScore      Float?   @map("auto_score")
+  finalScore     Float?   @map("final_score")
+  status         String   @map("status")         // e.g., "draft","submitted","late","graded"
+  submittedAt    DateTime @default(now()) @map("submitted_at")
+
+  // relations
+  assignment     Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([assignmentId, userId, attemptNumber]) // one row per attempt
+  @@index([userId])
+  @@index([assignmentId, submittedAt])
+  @@map("submission")
+}
+
+model Enrollment {
+  id        String   @id @default(uuid()) @db.Uuid @map("id")
+  userId    String   @db.Uuid @map("user_id")
+  courseId  String   @db.Uuid @map("course_id")
+  role      String   @map("role")         // 'student' | 'instructor' | 'ta'
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([courseId, role])
+  @@map("enrollment")
+}
+
+model CalendarEvent {
+  id           String   @id @default(uuid()) @db.Uuid @map("id")
+  userId       String   @db.Uuid @map("user_id")
+  assignmentId String   @db.Uuid @map("assignment_id")
+  dueAt        DateTime @map("due_at")
+  title        String   @map("title")
+
+  // relations
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([assignmentId, dueAt])
+  @@map("calendar_event")
 }
