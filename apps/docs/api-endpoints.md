@@ -2,9 +2,6 @@
 
 This document provides links to all the deployed API endpoints for the NestJS backend. Each endpoint returns JSON data from the database.
 
-## Base URL
-Replace `YOUR_RENDER_URL` with your actual Render deployment URL (e.g., `https://your-app-name.onrender.com`)
-
 ## Endpoints
 
 ### Users
