@@ -21,78 +21,22 @@ import {
 import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
 
-// Mock calendar events - in real app this would come from API
-const calendarEvents = [
-  {
-    id: 1,
-    title: 'CISC474 - Setup Environment Due',
-    date: '2024-09-20',
-    type: 'assignment',
-    course: 'CISC474',
-    color: 'blue'
-  },
-  {
-    id: 2,
-    title: 'CISC474 - JavaScript Quiz Due',
-    date: '2024-09-25',
-    type: 'assignment',
-    course: 'CISC474',
-    color: 'blue'
-  },
-  {
-    id: 3,
-    title: 'CISC498 - Project Proposal Due',
-    date: '2024-10-01',
-    type: 'assignment',
-    course: 'CISC498',
-    color: 'green'
-  },
-  {
-    id: 4,
-    title: 'CISC474 - Todo App Due',
-    date: '2024-10-05',
-    type: 'assignment',
-    course: 'CISC474',
-    color: 'blue'
-  },
-  {
-    id: 5,
-    title: 'CPEG494 - Threat Analysis Due',
-    date: '2024-10-10',
-    type: 'assignment',
-    course: 'CPEG494',
-    color: 'gray'
-  },
-  {
-    id: 6,
-    title: 'CISC474 - Midterm Exam',
-    date: '2024-10-15',
-    type: 'exam',
-    course: 'CISC474',
-    color: 'red'
-  },
-  {
-    id: 7,
-    title: 'CPEG493 - AWS Lab Session',
-    date: '2024-10-18',
-    type: 'class',
-    course: 'CPEG493',
-    color: 'orange'
-  },
-  {
-    id: 8,
-    title: 'CISC498 - Project Presentation',
-    date: '2024-11-15',
-    type: 'presentation',
-    course: 'CISC498',
-    color: 'green'
-  }
-];
+interface CalendarEvent {
+  id: number;
+  title: string;
+  date: string;
+  type: string;
+  course: string;
+  color: string;
+}
 
 export const Route = createFileRoute('/calendar')({
   component: RouteComponent,
-  loader: async () => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  loader: async ({ context }) => {
+    // Access environment variable from Cloudflare Workers (production) or Vite (local dev)
+    const env = (context as any).cloudflare?.env;
+    const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
+
     try {
       const response = await fetch(`${apiUrl}/calendar-events`);
       if (!response.ok) {
@@ -127,7 +71,7 @@ function RouteComponent() {
   };
 
   // Map backend events to match the format
-  const events = backendEvents.map((event: any) => ({
+  const events: CalendarEvent[] = backendEvents.map((event: any) => ({
     id: event.id,
     title: event.title,
     date: dayjs(event.dueAt).format('YYYY-MM-DD'),
@@ -137,17 +81,17 @@ function RouteComponent() {
   }));
 
   // Get events for selected date
-  const getEventsForDate = (date: Date | null) => {
+  const getEventsForDate = (date: Date | null): CalendarEvent[] => {
     if (!date) return [];
     const dateString = dayjs(date).format('YYYY-MM-DD');
-    return events.filter((event: any) => event.date === dateString);
+    return events.filter((event) => event.date === dateString);
   };
 
   // Get events for current month
-  const getEventsForMonth = (date: Date) => {
+  const getEventsForMonth = (date: Date): CalendarEvent[] => {
     const monthStart = dayjs(date).startOf('month').format('YYYY-MM-DD');
     const monthEnd = dayjs(date).endOf('month').format('YYYY-MM-DD');
-    return events.filter((event: any) =>
+    return events.filter((event) =>
       event.date >= monthStart && event.date <= monthEnd
     );
   };
@@ -259,7 +203,7 @@ function RouteComponent() {
 
                 {selectedDateEvents.length > 0 ? (
                   <Stack gap="sm">
-                    {selectedDateEvents.map((event) => (
+                    {selectedDateEvents.map((event: CalendarEvent) => (
                       <Paper key={event.id} p="sm" withBorder>
                         <Group gap="sm">
                           <Text>{getEventTypeIcon(event.type)}</Text>
@@ -292,9 +236,9 @@ function RouteComponent() {
                 {currentMonthEvents.length > 0 ? (
                   <Stack gap="xs">
                     {currentMonthEvents
-                      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                      .sort((a: CalendarEvent, b: CalendarEvent) => new Date(a.date).getTime() - new Date(b.date).getTime())
                       .slice(0, 5)
-                      .map((event) => (
+                      .map((event: CalendarEvent) => (
                       <Paper key={event.id} p="xs" withBorder>
                         <Group gap="sm">
                           <Text size="sm">{getEventTypeIcon(event.type)}</Text>
