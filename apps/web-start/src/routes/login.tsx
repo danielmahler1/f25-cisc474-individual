@@ -1,6 +1,4 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import {
   Container,
   Paper,
@@ -15,8 +13,12 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
-export default function LoginPage() {
-  const router = useRouter();
+export const Route = createFileRoute('/login')({
+  component: LoginPage,
+});
+
+function LoginPage() {
+  const navigate = useNavigate();
   
   const form = useForm({
     initialValues: {
@@ -32,7 +34,7 @@ export default function LoginPage() {
   const handleSubmit = (values: typeof form.values) => {
     console.log('Login attempt:', values);
     // Simulate successful login and redirect to dashboard
-    router.push('/dashboard');
+    navigate({ to: '/dashboard' });
   };
 
   return (

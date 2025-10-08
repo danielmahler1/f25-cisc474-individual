@@ -2,9 +2,9 @@
   "name": "cisc474-project-starter",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "build": "ROLLUP_DISABLE_NATIVE=1 turbo run build",
     "clean": "turbo run clean",
-    "dev": "turbo run dev",
+    "dev": "ROLLUP_DISABLE_NATIVE=1 turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo run test",
@@ -15,13 +15,16 @@
     "db:seed": "turbo run db:seed"
   },
   "devDependencies": {
-    "prettier": "^3.6.2",
-    "turbo": "^2.5.6",
-    "prisma": "latest",
-    "typescript": "5.9.2",
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
-    "tsx": "4.19.1"
+    "prettier": "^3.6.2",
+    "prisma": "latest",
+    "tsx": "4.20.6",
+    "turbo": "^2.5.6",
+    "typescript": "5.9.2"
+  },
+  "overrides": {
+    "rollup": "^4.22.0"
   },
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",
@@ -31,6 +34,10 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@mantine/core": "^8.3.3",
+    "@mantine/dates": "^8.3.3",
+    "@mantine/form": "^8.3.3",
+    "@mantine/hooks": "^8.3.3",
     "@prisma/client": "latest"
   },
   "packageManager": "npm@10.9.0",
