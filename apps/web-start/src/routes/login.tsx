@@ -47,6 +47,7 @@ function RouteComponent() {
             </Title>
             <Text c="dimmed" size="sm">
               Enter your email below to login to your account
+              For now any email/password will work.
             </Text>
           </div>
 
