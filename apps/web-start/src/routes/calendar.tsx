@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import {
   Container,
   Paper,
@@ -15,6 +15,8 @@ import {
   Card,
   Badge,
   Grid,
+  Loader,
+  Center,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
@@ -89,28 +91,63 @@ const calendarEvents = [
 
 export const Route = createFileRoute('/calendar')({
   component: RouteComponent,
+  loader: async () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    try {
+      const response = await fetch(`${apiUrl}/calendar-events`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch calendar events');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching calendar events:', error);
+      return [];
+    }
+  },
 });
+
+function LoadingFallback() {
+  return (
+    <Center p="xl">
+      <Stack align="center" gap="md">
+        <Loader size="lg" />
+        <Text>Loading calendar events from backend...</Text>
+      </Stack>
+    </Center>
+  );
+}
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const backendEvents = Route.useLoaderData();
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
   const handleLogout = () => {
     navigate({ to: '/login' });
   };
 
+  // Map backend events to match the format
+  const events = backendEvents.map((event: any) => ({
+    id: event.id,
+    title: event.title,
+    date: dayjs(event.dueAt).format('YYYY-MM-DD'),
+    type: 'assignment',
+    course: event.assignment?.course?.code || 'N/A',
+    color: 'blue'
+  }));
+
   // Get events for selected date
   const getEventsForDate = (date: Date | null) => {
     if (!date) return [];
     const dateString = dayjs(date).format('YYYY-MM-DD');
-    return calendarEvents.filter(event => event.date === dateString);
+    return events.filter((event: any) => event.date === dateString);
   };
 
   // Get events for current month
   const getEventsForMonth = (date: Date) => {
     const monthStart = dayjs(date).startOf('month').format('YYYY-MM-DD');
     const monthEnd = dayjs(date).endOf('month').format('YYYY-MM-DD');
-    return calendarEvents.filter(event =>
+    return events.filter((event: any) =>
       event.date >= monthStart && event.date <= monthEnd
     );
   };
@@ -145,7 +182,12 @@ function RouteComponent() {
         <Group justify="space-between">
           <div>
             <Title order={2}>Calendar</Title>
-            <Text size="sm" c="dimmed">View your upcoming assignments and events</Text>
+            <Text size="sm" c="dimmed">
+              View your upcoming assignments and events
+              <Badge ml="sm" size="sm" variant="light" color="green">
+                Backend API Data
+              </Badge>
+            </Text>
           </div>
 
           <Group>
@@ -181,11 +223,12 @@ function RouteComponent() {
       </Paper>
 
       <Container size="xl">
+        <Suspense fallback={<LoadingFallback />}>
         <Grid>
           {/* Calendar */}
           <Grid.Col span={{ base: 12, md: 8 }}>
             <Card shadow="sm" padding="lg" radius="md" withBorder>
-              <Title order={3} mb="md">📅 Calendar</Title>
+              <Title order={3} mb="md">📅 Calendar (Data from backend)</Title>
 
               <DatePicker
                 value={selectedDate}
@@ -308,6 +351,7 @@ function RouteComponent() {
             </Stack>
           </Grid.Col>
         </Grid>
+        </Suspense>
       </Container>
     </Box>
   );
