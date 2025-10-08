@@ -1,5 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import {
   Container,
   Title,
@@ -10,17 +9,14 @@ import {
 } from '@mantine/core';
 
 export const Route = createFileRoute('/')({
+  beforeLoad: () => {
+    // Server-side redirect to login page
+    throw redirect({ to: '/login' });
+  },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Automatically redirect to login page
-    navigate({ to: '/login' });
-  }, []);
-
   return (
     <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
       <Paper shadow="md" p="xl" radius="md" style={{ width: '100%' }}>
@@ -29,7 +25,7 @@ function RouteComponent() {
           <Text c="dimmed" ta="center">
             Redirecting you to login...
           </Text>
-          <Button onClick={() => navigate({ to: '/login' })}>
+          <Button component="a" href="/login">
             Go to Login
           </Button>
         </Stack>

@@ -1,0 +1,18 @@
+id,name,email,role,created_at
+11d32ec7-6df2-425a-a729-fce077d02468,Daniel Mahler,daniel@example.edu,admin,2025-09-18 15:41:55.475
+2e74d4da-acd9-4abe-84ac-a82ea0106c1a,Prof. Ada Lovelace,ada@univ.edu,instructor,2025-09-18 15:41:55.53
+5370b027-b46d-410b-b620-2e6f0bf766aa,Student Eight,s8@univ.edu,student,2025-09-18 15:41:55.695
+5bbf4762-fc87-4158-9701-c36005861b06,Student Four,s4@univ.edu,student,2025-09-18 15:41:55.695
+70f0ce02-adaf-4f35-8c9e-7aeebc31c931,Prof. Grace Hopper,grace@univ.edu,instructor,2025-09-18 15:41:55.53
+869ab120-5768-493b-89fc-17e2aa9a569f,Student Eleven,s11@univ.edu,student,2025-09-18 15:41:55.695
+86a3db3f-9e65-43a6-a4ab-389e4fc3a36c,Student Seven,s7@univ.edu,student,2025-09-18 15:41:55.695
+8aa7d22f-9efb-4e41-baa2-eda5ddbb75ef,Student Six,s6@univ.edu,student,2025-09-18 15:41:55.695
+92e5ee13-bb0b-4ff0-bfc2-de6fde4c9fc6,Student Twelve,s12@univ.edu,student,2025-09-18 15:41:55.695
+991b69e4-865c-47ed-a795-669f3d1678b5,Student One,s1@univ.edu,student,2025-09-18 15:41:55.695
+a2c06103-04a3-448e-8d2d-5aa58590455f,Student Two,s2@univ.edu,student,2025-09-18 15:41:55.695
+b2ffe515-b84d-4e37-a9a7-439c90fcfc1c,Student Ten,s10@univ.edu,student,2025-09-18 15:41:55.695
+b835c15d-5c4b-41e1-acf6-c154a12cdd36,Prof. Edsger Dijkstra,edsger@univ.edu,instructor,2025-09-18 15:41:55.53
+ce199a83-6efb-4946-8572-1762ee141bd0,Student Three,s3@univ.edu,student,2025-09-18 15:41:55.695
+ce657459-2e94-4db6-87d4-72cf5bffe7b9,Student Nine,s9@univ.edu,student,2025-09-18 15:41:55.695
+d0ba1eac-7b0f-4c98-97c8-e689ddf7a06e,Student Five,s5@univ.edu,student,2025-09-18 15:41:55.695
+e014c7f3-71e1-41d0-a5c3-07d6722a3284,Prof. Alan Turing,alan@univ.edu,instructor,2025-09-18 15:41:55.53
