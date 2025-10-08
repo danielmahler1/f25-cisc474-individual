@@ -24,26 +24,20 @@ import {
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
   loader: async ({ context }) => {
-    // Debug logging
-    console.log('Context:', context);
-    console.log('Cloudflare env:', (context as any).cloudflare?.env);
-    console.log('import.meta.env:', import.meta.env);
-
     // Access environment variable from Cloudflare Workers (production) or Vite (local dev)
     const env = (context as any).cloudflare?.env;
     const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
-
-    console.log('Using API URL:', apiUrl);
 
     try {
       const response = await fetch(`${apiUrl}/courses`);
       if (!response.ok) {
         throw new Error('Failed to fetch courses');
       }
-      return await response.json();
+      const data = await response.json();
+      return { courses: data, debugInfo: { apiUrl, hasCloudflareEnv: !!env, hasViteEnv: !!import.meta.env?.VITE_API_URL } };
     } catch (error) {
       console.error('Error fetching courses:', error);
-      return [];
+      return { courses: [], debugInfo: { apiUrl, error: String(error), hasCloudflareEnv: !!env, hasViteEnv: !!import.meta.env?.VITE_API_URL } };
     }
   },
 });
@@ -61,7 +55,9 @@ function LoadingFallback() {
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const courses = Route.useLoaderData();
+  const data = Route.useLoaderData();
+  const courses = data.courses;
+  const debugInfo = data.debugInfo;
 
   const handleLogout = () => {
     navigate({ to: '/login' });
@@ -77,8 +73,13 @@ function RouteComponent() {
             <Text size="sm" c="dimmed">
               Welcome back to your classes
               <Badge ml="sm" size="sm" variant="light">
-                Backend API: {import.meta.env.VITE_API_URL || 'localhost:3000'}
+                API: {debugInfo.apiUrl}
               </Badge>
+              {debugInfo.error && (
+                <Badge ml="sm" size="sm" variant="light" color="red">
+                  Error: {debugInfo.error}
+                </Badge>
+              )}
             </Text>
           </div>
 
