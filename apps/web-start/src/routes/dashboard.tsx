@@ -24,9 +24,16 @@ import {
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
   loader: async ({ context }) => {
+    // Debug logging
+    console.log('Context:', context);
+    console.log('Cloudflare env:', (context as any).cloudflare?.env);
+    console.log('import.meta.env:', import.meta.env);
+
     // Access environment variable from Cloudflare Workers (production) or Vite (local dev)
     const env = (context as any).cloudflare?.env;
     const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
+
+    console.log('Using API URL:', apiUrl);
 
     try {
       const response = await fetch(`${apiUrl}/courses`);
