@@ -9,7 +9,10 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import TanStackQueryDevtools from '../integrations/devtools';
+import { MantineProvider } from '@mantine/core';
 import appCss from '../styles.css?url';
+import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import type { QueryClient } from '@tanstack/react-query';
 
 export interface MyRouterContext {
@@ -27,7 +30,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Class Manager',
       },
     ],
     links: [
@@ -38,8 +41,17 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
 
+  component: RootComponent,
   shellComponent: RootDocument,
 });
+
+function RootComponent() {
+  return (
+    <MantineProvider>
+      <Outlet />
+    </MantineProvider>
+  );
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
