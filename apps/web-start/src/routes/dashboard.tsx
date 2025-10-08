@@ -1,6 +1,4 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import {
   Container,
   Paper,
@@ -62,11 +60,15 @@ const classes = [
   }
 ];
 
-export default function DashboardPage() {
-  const router = useRouter();
+export const Route = createFileRoute('/dashboard')({
+  component: DashboardPage,
+});
+
+function DashboardPage() {
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    router.push('/login');
+    navigate({ to: '/login' });
   };
 
   return (
@@ -114,7 +116,7 @@ export default function DashboardPage() {
           <Button 
             leftSection="📅"
             variant="light" 
-            onClick={() => router.push('/calendar')}
+            onClick={() => navigate({ to: '/calendar' })}
           >
             View Calendar
           </Button>
@@ -164,7 +166,7 @@ export default function DashboardPage() {
                   variant="light" 
                   color={classItem.color} 
                   fullWidth
-                  onClick={() => router.push(`/course/${classItem.slug}`)}
+                  onClick={() => navigate({ to: `/course/${classItem.slug}` })}
                 >
                   📚 View Class
                 </Button>

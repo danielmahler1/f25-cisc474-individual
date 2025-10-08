@@ -4,9 +4,8 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "dist",
-    "rootDir": "./src",
     "composite": false,
     "noEmit": false
   },
-  "include": ["src", "generated"] // include your generator output
+  "include": ["src"] // only include source files, not generated files
 }
