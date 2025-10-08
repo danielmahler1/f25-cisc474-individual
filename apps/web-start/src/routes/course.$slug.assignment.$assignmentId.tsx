@@ -17,13 +17,37 @@ import {
   Anchor,
   Textarea,
   FileInput,
-  Card,
   List,
   Grid,
 } from '@mantine/core';
 
-// Assignment data
-const assignmentData = {
+// Assignment data types
+type FileAssignment = {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  points: number;
+  instructions: string[];
+  submissionType: 'file';
+  maxFileSize: string;
+  allowedTypes: string[];
+};
+
+type TextAssignment = {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  points: number;
+  instructions: string[];
+  submissionType: 'text';
+  maxLength: number;
+};
+
+type Assignment = FileAssignment | TextAssignment;
+
+const assignmentData: Record<string, Assignment> = {
   'setup-environment': {
     id: 'setup-environment',
     title: 'Setup Development Environment',
@@ -212,7 +236,7 @@ function AssignmentPage() {
                   <FileInput
                     label="Upload File"
                     placeholder="Choose file to upload"
-                    accept={assignment.allowedTypes?.join(',')}
+                    accept={assignment.allowedTypes.join(',')}
                     description={`Maximum file size: ${assignment.maxFileSize}`}
                   />
                 )}
