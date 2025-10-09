@@ -24,7 +24,8 @@ import {
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
   loader: async ({ context }) => {
-    // Access environment variable from Cloudflare Workers (production) or Vite (local dev)
+    // In production (Cloudflare), use context.cloudflare.env
+    // In development (Vite), use import.meta.env
     const env = (context as any).cloudflare?.env;
     const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
 
@@ -34,10 +35,10 @@ export const Route = createFileRoute('/dashboard')({
         throw new Error('Failed to fetch courses');
       }
       const data = await response.json();
-      return { courses: data, debugInfo: { apiUrl, hasCloudflareEnv: !!env, hasViteEnv: !!import.meta.env?.VITE_API_URL } };
+      return { courses: data, debugInfo: { apiUrl, envKeys: env ? Object.keys(env) : [] } };
     } catch (error) {
       console.error('Error fetching courses:', error);
-      return { courses: [], debugInfo: { apiUrl, error: String(error), hasCloudflareEnv: !!env, hasViteEnv: !!import.meta.env?.VITE_API_URL } };
+      return { courses: [], debugInfo: { apiUrl, error: String(error), envKeys: env ? Object.keys(env) : [] } };
     }
   },
 });
@@ -74,6 +75,9 @@ function RouteComponent() {
               Welcome back to your classes
               <Badge ml="sm" size="sm" variant="light">
                 API: {debugInfo.apiUrl}
+              </Badge>
+              <Badge ml="sm" size="sm" variant="light" color="blue">
+                Env keys: {debugInfo.envKeys.length > 0 ? debugInfo.envKeys.join(', ') : 'none'}
               </Badge>
               {debugInfo.error && (
                 <Badge ml="sm" size="sm" variant="light" color="red">
