@@ -24,20 +24,32 @@ import {
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
   loader: async ({ context }) => {
-    // In production (Cloudflare), use context.cloudflare.env
-    // In development (Vite), use import.meta.env
     const env = (context as any).cloudflare?.env;
     const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
 
+    console.log('[Dashboard Loader] Running loader, apiUrl:', apiUrl);
+    console.log('[Dashboard Loader] Has cloudflare env:', !!env);
+
     try {
-      const response = await fetch(`${apiUrl}/courses`);
+      const response = await fetch(`${apiUrl}/courses`, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      console.log('[Dashboard Loader] Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to fetch courses');
+        const errorText = await response.text();
+        console.error('[Dashboard Loader] Error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
+
       const data = await response.json();
+      console.log('[Dashboard Loader] Fetched courses:', data.length);
       return { courses: data, debugInfo: { apiUrl, envKeys: env ? Object.keys(env) : [] } };
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('[Dashboard Loader] Error fetching courses:', error);
       return { courses: [], debugInfo: { apiUrl, error: String(error), envKeys: env ? Object.keys(env) : [] } };
     }
   },
