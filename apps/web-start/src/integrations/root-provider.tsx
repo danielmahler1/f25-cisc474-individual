@@ -27,3 +27,4 @@ export function Provider({
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
+
