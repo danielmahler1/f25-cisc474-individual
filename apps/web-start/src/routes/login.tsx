@@ -38,7 +38,22 @@ function RouteComponent() {
   };
 
   return (
-    <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
+    <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center'}}>
+      <Paper shadow="md" p="xl" radius="md" style={{ width: '100%' }}>
+        Links to pages connected to the backend API:
+        <ul>
+          <li>
+            <Anchor href="/dashboard" c="blue">
+              Dashboard
+            </Anchor>
+          </li>
+          <li>
+            <Anchor href="/calendar" c="blue">
+              Calendar
+            </Anchor>
+          </li>
+        </ul>
+        </Paper>
       <Paper shadow="md" p="xl" radius="md" style={{ width: '100%' }}>
         <Stack gap="md">
           <div>
