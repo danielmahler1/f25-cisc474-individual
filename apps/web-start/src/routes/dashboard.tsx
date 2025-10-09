@@ -23,21 +23,10 @@ import {
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
-  loader: async ({ context }) => {
-    const env = (context as any).cloudflare?.env;
-    const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
-
-    try {
-      const response = await fetch(`${apiUrl}/courses`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch courses');
-      }
-      const data = await response.json();
-      return { courses: data, debugInfo: { apiUrl } };
-    } catch (error) {
-      console.error('Error fetching courses:', error);
-      return { courses: [], debugInfo: { apiUrl, error: String(error) } };
-    }
+  loader: async () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const response = await fetch(`${apiUrl}/courses`);
+    return response.json();
   },
 });
 
@@ -54,9 +43,7 @@ function LoadingFallback() {
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const data = Route.useLoaderData();
-  const courses = data.courses;
-  const debugInfo = data.debugInfo;
+  const courses = Route.useLoaderData();
 
   const handleLogout = () => {
     navigate({ to: '/login' });
@@ -71,14 +58,6 @@ function RouteComponent() {
             <Title order={2}>Dashboard</Title>
             <Text size="sm" c="dimmed">
               Welcome back to your classes
-              <Badge ml="sm" size="sm" variant="light">
-                API: {debugInfo.apiUrl}
-              </Badge>
-              {debugInfo.error && (
-                <Badge ml="sm" size="sm" variant="light" color="red">
-                  Error: {debugInfo.error}
-                </Badge>
-              )}
             </Text>
           </div>
 
@@ -111,7 +90,7 @@ function RouteComponent() {
       {/* Quick Actions */}
       <Container size="lg" mb="xl">
         <Group justify="space-between" mb="md">
-          <Title order={3}>Quick Actions (This page and the calendar page are connected to the backend) </Title>
+          <Title order={3}>Quick Actions</Title>
         </Group>
         <Group gap="md">
           <Button
@@ -135,9 +114,6 @@ function RouteComponent() {
       <Container size="lg">
         <Group justify="space-between" mb="md">
           <Title order={3}>My Classes</Title>
-          <Badge color="green" variant="dot">
-            Data from Backend API
-          </Badge>
         </Group>
 
         <Suspense fallback={<LoadingFallback />}>

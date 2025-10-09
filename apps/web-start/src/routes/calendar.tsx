@@ -32,20 +32,10 @@ interface CalendarEvent {
 
 export const Route = createFileRoute('/calendar')({
   component: RouteComponent,
-  loader: async ({ context }) => {
-    const env = (context as any).cloudflare?.env;
-    const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
-
-    try {
-      const response = await fetch(`${apiUrl}/calendar-events`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch calendar events');
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching calendar events:', error);
-      return [];
-    }
+  loader: async () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const response = await fetch(`${apiUrl}/calendar-events`);
+    return response.json();
   },
 });
 
@@ -127,9 +117,6 @@ function RouteComponent() {
             <Title order={2}>Calendar</Title>
             <Text size="sm" c="dimmed">
               View your upcoming assignments and events
-              <Badge ml="sm" size="sm" variant="light" color="green">
-                Backend API Data
-              </Badge>
             </Text>
           </div>
 
@@ -171,7 +158,7 @@ function RouteComponent() {
           {/* Calendar */}
           <Grid.Col span={{ base: 12, md: 8 }}>
             <Card shadow="sm" padding="lg" radius="md" withBorder>
-              <Title order={3} mb="md">📅 Calendar (Data from backend)</Title>
+              <Title order={3} mb="md">📅 Calendar</Title>
 
               <DatePicker
                 value={selectedDate}
