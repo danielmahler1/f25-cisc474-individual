@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState, Suspense } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Container,
   Paper,
@@ -16,6 +17,7 @@ import {
   Badge,
   Grid,
   Loader,
+  Alert,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
@@ -31,36 +33,63 @@ interface CalendarEvent {
 
 export const Route = createFileRoute('/calendar')({
   component: RouteComponent,
-  loader: async () => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    const response = await fetch(`${apiUrl}/calendar-events`, {
-      signal: AbortSignal.timeout(60000), // 60 second timeout for cold starts
-    });
-    return response.json();
-  },
-  pendingComponent: LoadingFallback,
 });
 
-function LoadingFallback() {
-  return (
-    <Box style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Stack align="center" gap="md">
-        <Loader size="xl" />
-        <Title order={3}>Loading Calendar...</Title>
-        <Text c="dimmed" size="sm">Fetching events from backend server</Text>
-      </Stack>
-    </Box>
-  );
+async function fetchCalendarEvents() {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const response = await fetch(`${apiUrl}/calendar-events`, {
+    signal: AbortSignal.timeout(90000), // 90 second timeout for Render cold starts
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch calendar events: ${response.status}`);
+  }
+
+  return response.json();
 }
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const backendEvents = Route.useLoaderData();
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+
+  const { data: backendEvents, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ['calendar-events'],
+    queryFn: fetchCalendarEvents,
+    retry: 3, // Retry 3 times on failure
+    retryDelay: 2000, // Wait 2 seconds between retries
+  });
 
   const handleLogout = () => {
     navigate({ to: '/login' });
   };
+
+  // Loading state - show during cold start
+  if (isLoading) {
+    return (
+      <Box style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Stack align="center" gap="md">
+          <Loader size="xl" />
+          <Title order={3}>Loading Calendar...</Title>
+          <Text c="dimmed" size="sm">Render is waking up (this may take 30-60 seconds on first load)</Text>
+        </Stack>
+      </Box>
+    );
+  }
+
+  // Error state - show with retry button
+  if (isError) {
+    return (
+      <Box style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Stack align="center" gap="md">
+          <Alert color="red" title="Error Loading Calendar" style={{ maxWidth: 500 }}>
+            {error?.message || 'Failed to load calendar events from backend'}
+          </Alert>
+          <Button onClick={() => refetch()}>Retry</Button>
+          <Button variant="outline" onClick={() => navigate({ to: '/dashboard' })}>Back to Dashboard</Button>
+        </Stack>
+      </Box>
+    );
+  }
 
   // Map backend events to match the format
   const events: CalendarEvent[] = backendEvents.map((event: any) => ({
@@ -156,7 +185,6 @@ function RouteComponent() {
       </Paper>
 
       <Container size="xl">
-        <Suspense fallback={<LoadingFallback />}>
         <Grid>
           {/* Calendar */}
           <Grid.Col span={{ base: 12, md: 8 }}>
@@ -284,7 +312,6 @@ function RouteComponent() {
             </Stack>
           </Grid.Col>
         </Grid>
-        </Suspense>
       </Container>
     </Box>
   );
