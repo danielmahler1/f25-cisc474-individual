@@ -27,7 +27,7 @@ export const Route = createFileRoute('/dashboard')({
 async function fetchCourses() {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
   const response = await fetch(`${apiUrl}/courses`, {
-    signal: AbortSignal.timeout(90000), // 90 second timeout for Render cold starts
+    signal: AbortSignal.timeout(300000), // 5 minute timeout for Render cold starts
   });
 
   if (!response.ok) {

@@ -30,8 +30,7 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 3000;
-  const host = process.env.HOST || undefined;
-  await app.listen(port, host);
+  await app.listen(port, '0.0.0.0');
 }
 
 void bootstrap();
