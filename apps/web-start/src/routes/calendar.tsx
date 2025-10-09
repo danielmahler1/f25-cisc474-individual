@@ -16,7 +16,6 @@ import {
   Badge,
   Grid,
   Loader,
-  Center,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import dayjs from 'dayjs';
@@ -34,19 +33,23 @@ export const Route = createFileRoute('/calendar')({
   component: RouteComponent,
   loader: async () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    const response = await fetch(`${apiUrl}/calendar-events`);
+    const response = await fetch(`${apiUrl}/calendar-events`, {
+      signal: AbortSignal.timeout(60000), // 60 second timeout for cold starts
+    });
     return response.json();
   },
+  pendingComponent: LoadingFallback,
 });
 
 function LoadingFallback() {
   return (
-    <Center p="xl">
+    <Box style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Stack align="center" gap="md">
-        <Loader size="lg" />
-        <Text>Loading calendar events from backend...</Text>
+        <Loader size="xl" />
+        <Title order={3}>Loading Calendar...</Title>
+        <Text c="dimmed" size="sm">Fetching events from backend server</Text>
       </Stack>
-    </Center>
+    </Box>
   );
 }
 

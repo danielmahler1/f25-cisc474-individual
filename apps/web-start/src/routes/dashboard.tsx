@@ -16,7 +16,6 @@ import {
   Box,
   Flex,
   Loader,
-  Center,
   Stack,
   Alert,
 } from '@mantine/core';
@@ -25,19 +24,23 @@ export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
   loader: async () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    const response = await fetch(`${apiUrl}/courses`);
+    const response = await fetch(`${apiUrl}/courses`, {
+      signal: AbortSignal.timeout(60000), // 60 second timeout for cold starts
+    });
     return response.json();
   },
+  pendingComponent: LoadingFallback,
 });
 
 function LoadingFallback() {
   return (
-    <Center p="xl">
+    <Box style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Stack align="center" gap="md">
-        <Loader size="lg" />
-        <Text>Loading courses from backend...</Text>
+        <Loader size="xl" />
+        <Title order={3}>Loading Dashboard...</Title>
+        <Text c="dimmed" size="sm">Waking up backend server (this may take 30-60 seconds on first load)</Text>
       </Stack>
-    </Center>
+    </Box>
   );
 }
 
