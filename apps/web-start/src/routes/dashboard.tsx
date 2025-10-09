@@ -27,30 +27,16 @@ export const Route = createFileRoute('/dashboard')({
     const env = (context as any).cloudflare?.env;
     const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
 
-    console.log('[Dashboard Loader] Running loader, apiUrl:', apiUrl);
-    console.log('[Dashboard Loader] Has cloudflare env:', !!env);
-
     try {
-      const response = await fetch(`${apiUrl}/courses`, {
-        headers: {
-          'Accept': 'application/json',
-        },
-      });
-
-      console.log('[Dashboard Loader] Response status:', response.status);
-
+      const response = await fetch(`${apiUrl}/courses`);
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('[Dashboard Loader] Error response:', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        throw new Error('Failed to fetch courses');
       }
-
       const data = await response.json();
-      console.log('[Dashboard Loader] Fetched courses:', data.length);
-      return { courses: data, debugInfo: { apiUrl, envKeys: env ? Object.keys(env) : [] } };
+      return { courses: data, debugInfo: { apiUrl } };
     } catch (error) {
-      console.error('[Dashboard Loader] Error fetching courses:', error);
-      return { courses: [], debugInfo: { apiUrl, error: String(error), envKeys: env ? Object.keys(env) : [] } };
+      console.error('Error fetching courses:', error);
+      return { courses: [], debugInfo: { apiUrl, error: String(error) } };
     }
   },
 });
@@ -87,9 +73,6 @@ function RouteComponent() {
               Welcome back to your classes
               <Badge ml="sm" size="sm" variant="light">
                 API: {debugInfo.apiUrl}
-              </Badge>
-              <Badge ml="sm" size="sm" variant="light" color="blue">
-                Env keys: {debugInfo.envKeys.length > 0 ? debugInfo.envKeys.join(', ') : 'none'}
               </Badge>
               {debugInfo.error && (
                 <Badge ml="sm" size="sm" variant="light" color="red">

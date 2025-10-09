@@ -33,7 +33,6 @@ interface CalendarEvent {
 export const Route = createFileRoute('/calendar')({
   component: RouteComponent,
   loader: async ({ context }) => {
-    // Access environment variable from Cloudflare Workers (production) or Vite (local dev)
     const env = (context as any).cloudflare?.env;
     const apiUrl = env?.VITE_API_URL || import.meta.env?.VITE_API_URL || 'http://localhost:3000';
 
