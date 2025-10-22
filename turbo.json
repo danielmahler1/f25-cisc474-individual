@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["DATABASE_URL", "DIRECT_URL", "VITE_API_URL", "PORT", "NODE_ENV", "AUTH0_ISSUER_URL", "AUTH0_AUDIENCE"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [
         "build/**",

@@ -14,9 +14,9 @@ generator client {
 
 model User {
   id         String   @id @default(uuid()) @db.Uuid @map("id")
-  name       String   @map("name")
-  email      String   @unique @map("email")
-  role       String   @map("role")          // system-level role if you want (e.g., "admin", "user")
+  name       String?   @map("name")
+  email      String?   @unique @map("email")
+  role       String?   @map("role")          // system-level role if you want (e.g., "admin", "user")
   createdAt  DateTime @default(now()) @map("created_at")
 
   // relations
@@ -24,8 +24,24 @@ model User {
   submissions Submission[]
   enrollments Enrollment[]
   calendarEvents CalendarEvent[]
+  authentications Authentication[]
 
   @@map("users")
+}
+
+model Authentication {
+  id             String   @id @default(uuid()) @db.Uuid @map("id")
+  userId         String   @db.Uuid @map("user_id")
+  provider       String   @map("provider")        // e.g., "auth0", "google", "github"
+  providerId String   @map("provider_user_id") // e.g., the user ID from the provider
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // relations
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerId])
+  @@index([userId])
+  @@map("authentication")
 }
 
 model Course {
