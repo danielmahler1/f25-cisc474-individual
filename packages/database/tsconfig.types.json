@@ -6,7 +6,8 @@
     "outDir": "dist",
     "rootDir": "./src",
     "composite": false,
-    "noEmit": false
+    "noEmit": false,
+    "module": "Node16"
   },
-  "include": ["src", "generated"] // include your generator output
+  "include": ["src"] // Only include src, not generated (Prisma generates its own types)
 }

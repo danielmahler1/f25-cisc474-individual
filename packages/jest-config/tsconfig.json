@@ -6,8 +6,7 @@
     "allowJs": true,
     "esModuleInterop": true,
     "incremental": false,
-    "module": "commonjs",
-    "moduleResolution": "Node10",
+    "module": "Node16",
     "outDir": "dist",
     "baseUrl": "src"
   },

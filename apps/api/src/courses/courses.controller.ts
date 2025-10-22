@@ -1,5 +1,16 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { CoursesService } from './courses.service';
+import type { CreateCourse, UpdateCourse } from '@repo/api';
 
 @Controller('courses')
 export class CoursesController {
@@ -13,5 +24,25 @@ export class CoursesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.coursesService.findOne(id);
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() createCourseDto: CreateCourse) {
+    return this.coursesService.create(createCourseDto);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateCourseDto: UpdateCourse,
+  ) {
+    return this.coursesService.update(id, updateCourseDto);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  remove(@Param('id') id: string) {
+    return this.coursesService.remove(id);
   }
 }

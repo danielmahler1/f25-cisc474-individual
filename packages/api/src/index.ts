@@ -12,3 +12,8 @@ export const links = {
     Link,
   },
 };
+
+// Course DTOs
+export * from './courses/dto/course.dto';
+export * from './courses/dto/create-course.dto';
+export * from './courses/dto/update-course.dto';

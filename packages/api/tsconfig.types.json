@@ -5,7 +5,8 @@
     "emitDeclarationOnly": true,
     "outDir": "dist",
     "composite": false,
-    "noEmit": false
+    "noEmit": false,
+    "module": "Node16"
   },
-  "include": ["src"] // include your generator output
+  "include": ["src"]
 }
