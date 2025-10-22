@@ -1,10 +1,9 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useState } from 'react';
 import {
-  ActionIcon,
   Alert,
-  Avatar,
   Badge,
   Box,
   Button,
@@ -14,7 +13,6 @@ import {
   Grid,
   Group,
   Loader,
-  Menu,
   Modal,
   Paper,
   Stack,
@@ -22,6 +20,7 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { LogoutButton } from '../components/LogoutButton';
 import type { Course, CreateCourse, UpdateCourse } from '@repo/api';
 
 export const Route = createFileRoute('/dashboard')({
@@ -30,65 +29,29 @@ export const Route = createFileRoute('/dashboard')({
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-// Fetch all courses
-async function fetchCourses(): Promise<Array<Course>> {
-  const response = await fetch(`${API_URL}/courses`, {
-    signal: AbortSignal.timeout(300000), // 5 minute timeout for Render cold starts
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch courses: ${response.status}`);
-  }
-
-  return response.json();
-}
-
-// Create a new course
-async function createCourse(data: CreateCourse): Promise<Course> {
-  const response = await fetch(`${API_URL}/courses`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to create course: ${response.status}`);
-  }
-
-  return response.json();
-}
-
-// Update a course
-async function updateCourse(id: string, data: UpdateCourse): Promise<Course> {
-  const response = await fetch(`${API_URL}/courses/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to update course: ${response.status}`);
-  }
-
-  return response.json();
-}
-
-// Delete a course
-async function deleteCourse(id: string): Promise<Course> {
-  const response = await fetch(`${API_URL}/courses/${id}`, {
-    method: 'DELETE',
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to delete course: ${response.status}`);
-  }
-
-  return response.json();
-}
-
 function RouteComponent() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { getAccessTokenSilently, isAuthenticated, isLoading: authLoading, user } = useAuth0();
+
+  // Helper function to make authenticated requests
+  const fetchWithAuth = async (endpoint: string, options?: RequestInit) => {
+    const token = await getAccessTokenSilently();
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        ...options?.headers,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  };
 
   // Modal state
   const [createModalOpened, setCreateModalOpened] = useState(false);
@@ -107,9 +70,10 @@ function RouteComponent() {
   // Query for fetching courses
   const { data: courses, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['courses'],
-    queryFn: fetchCourses,
+    queryFn: () => fetchWithAuth('/courses'),
     retry: 3,
     retryDelay: 2000,
+    enabled: isAuthenticated, // Only fetch if authenticated
   });
 
   // Auto-populate userId when courses load
@@ -122,7 +86,10 @@ function RouteComponent() {
 
   // Mutation for creating a course
   const createMutation = useMutation({
-    mutationFn: createCourse,
+    mutationFn: (data: CreateCourse) => fetchWithAuth('/courses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       setCreateModalOpened(false);
@@ -137,7 +104,10 @@ function RouteComponent() {
   // Mutation for updating a course
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateCourse }) =>
-      updateCourse(id, data),
+      fetchWithAuth(`/courses/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       setEditModalOpened(false);
@@ -148,7 +118,9 @@ function RouteComponent() {
 
   // Mutation for deleting a course
   const deleteMutation = useMutation({
-    mutationFn: deleteCourse,
+    mutationFn: (id: string) => fetchWithAuth(`/courses/${id}`, {
+      method: 'DELETE',
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       setDeleteModalOpened(false);
@@ -156,9 +128,6 @@ function RouteComponent() {
     },
   });
 
-  const handleLogout = () => {
-    navigate({ to: '/login' });
-  };
 
   const resetForm = () => {
     setFormData({
@@ -211,6 +180,24 @@ function RouteComponent() {
     setDeleteModalOpened(true);
   };
 
+  // Auth loading state
+  if (authLoading) {
+    return (
+      <Box style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Stack align="center" gap="md">
+          <Loader size="xl" />
+          <Title order={3}>Authenticating...</Title>
+        </Stack>
+      </Box>
+    );
+  }
+
+  // Not authenticated - redirect to home
+  if (!isAuthenticated) {
+    navigate({ to: '/' });
+    return null;
+  }
+
   // Loading state - show during cold start
   if (isLoading) {
     return (
@@ -251,29 +238,12 @@ function RouteComponent() {
             </Text>
           </div>
 
-          <Menu shadow="md" width={200}>
-            <Menu.Target>
-              <ActionIcon variant="subtle" size="lg">
-                <Avatar size="sm" />
-              </ActionIcon>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              <Menu.Item>
-                👤 Profile
-              </Menu.Item>
-              <Menu.Item>
-                ⚙️ Settings
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Item
-                onClick={handleLogout}
-                color="red"
-              >
-                🚪 Logout
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          <Group gap="sm">
+            <Text size="sm" c="dimmed">
+              {user?.email || user?.name}
+            </Text>
+            <LogoutButton />
+          </Group>
         </Group>
       </Paper>
 
@@ -311,7 +281,7 @@ function RouteComponent() {
 
         {courses && courses.length > 0 ? (
           <Grid>
-            {courses.map((course) => (
+            {courses.map((course: Course) => (
               <Grid.Col span={{ base: 12, sm: 6, md: 4 }} key={course.id}>
                 <Card shadow="sm" padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="xs">

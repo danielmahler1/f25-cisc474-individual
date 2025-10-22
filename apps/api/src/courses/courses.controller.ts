@@ -8,10 +8,13 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import type { CreateCourse, UpdateCourse } from '@repo/api';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
